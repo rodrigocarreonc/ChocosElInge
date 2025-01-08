@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SaborController;
+use App\Http\Controllers\VentaController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,3 +31,5 @@ Route::get('sabores', [SaborController::class,'get']);
 Route::post('sabores', [SaborController::class,'create']);
 Route::put('sabores/{id}', [SaborController::class,'update']);
 Route::delete('sabores/{id}', [SaborController::class,'delete']);
+
+Route::post('venta', [VentaController::class,'create']);
