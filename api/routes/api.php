@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SaborController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\BalanceController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,3 +36,9 @@ Route::delete('sabores/{id}', [SaborController::class,'delete']);
 Route::get('ventas', [VentaController::class,'all']);
 Route::get('ventas/{id}', [VentaController::class,'get']);
 Route::post('venta', [VentaController::class,'create']);
+
+Route::get('egreso', [BalanceController::class,'get']);
+Route::post('egreso', [BalanceController::class,'outflow']);
+Route::delete('egreso/{id}', [BalanceController::class,'delete']);
+
+Route::get('balance', [BalanceController::class,'balance']);
