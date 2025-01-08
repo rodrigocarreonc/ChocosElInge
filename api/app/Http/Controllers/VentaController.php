@@ -11,6 +11,23 @@ use Illuminate\Support\Facades\DB;
 
 class VentaController extends Controller
 {
+    public function all(){
+        $ventas = Venta::with('detalles.producto', 'detalles.sabor')->get();
+        return response()->json($ventas);
+    }
+
+    public function get($id){
+        $venta = Venta::with('detalles.producto', 'detalles.sabor')->find($id);
+
+        if(!$venta){
+            return response()->json([
+                'message' => 'Venta no encontrada o inexistente :(',
+            ], 404);
+        }
+
+        return response()->json($venta);
+    }
+
     public function create(Request $request){
         $mensajes = [
             'productos.required' => 'Debes agregar al menos un producto.',

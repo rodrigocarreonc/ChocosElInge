@@ -32,4 +32,6 @@ Route::post('sabores', [SaborController::class,'create']);
 Route::put('sabores/{id}', [SaborController::class,'update']);
 Route::delete('sabores/{id}', [SaborController::class,'delete']);
 
+Route::get('ventas', [VentaController::class,'all']);
+Route::get('ventas/{id}', [VentaController::class,'get']);
 Route::post('venta', [VentaController::class,'create']);
