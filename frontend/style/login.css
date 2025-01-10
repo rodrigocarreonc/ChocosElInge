@@ -18,7 +18,7 @@ body {
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 20px;    
 }
 form {
     display: flex;
@@ -28,12 +28,23 @@ label {
     margin-bottom: 5px;
     color: #555;
 }
-input {
+.user{
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
+}
+.password-box input{
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 79%;
+}
+.fa-eye{
+    padding:2px;
 }
 button {
     padding: 10px;

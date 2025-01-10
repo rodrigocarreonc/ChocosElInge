@@ -5,26 +5,8 @@ if (!isset($_SESSION['access_token'])) {
     header('Location: login.php');
     exit();
 }
-
+include ('http.php');
 $token = $_SESSION['access_token'];
-
-$url = 'http://127.0.0.1:8000/api/product/productos';
-$options = array(
-    'http' => array(
-        'header'  => "Content-Type: application/json\r\n" .
-                     "Authorization: Bearer " . $token . "\r\n",
-        'method'  => 'GET',
-    ),
-);
-
-$context  = stream_context_create($options);
-$result = file_get_contents($url, false, $context);
-
-if ($result === FALSE) {
-    $error_message = "Error fetching products.";
-} else {
-    $products = json_decode($result, true);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,9 +21,9 @@ if ($result === FALSE) {
         <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
         <h2>Chocos "El Inge"</h2>
         <ul>
-            <li><a href="">Venta</a></li>
-            <li><a href="admin.php">Finanzas</a></li>
-            <li><a href="me.php">Perfil</a></li>
+            <li><a href="">Inicio</a></li>
+            <li><a href="admin.php">Administrar</a></li>
+            <li><a href="finance.php">Finanzas</a></li>
         </ul>
     </div>
     <div class="container">
@@ -152,16 +134,18 @@ if ($result === FALSE) {
                 },
                 body: JSON.stringify(saleData)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 201) {
+                    return response.json();
+                } else {
+                    throw new Error('Error al registrar la venta');
+                }
+            })
             .then(data => {
                 console.log('Response from server:', data); // Log the response to the console
-                if (data.success) {
-                    alert('Venta registrada con éxito');
-                    cart = [];
-                    updateCart();
-                } else {
-                    alert('Error al registrar la venta');
-                }
+                alert('Venta registrada con éxito');
+                cart = [];
+                updateCart();
             })
             .catch(error => {
                 console.error('Error:', error);
