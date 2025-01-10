@@ -11,7 +11,6 @@ body {
     color: white;
     height: 97.18vh;
     padding-top: 20px;
-    position: fixed;
 }
 .sidebar h2 {
     text-align: center;
@@ -45,10 +44,9 @@ body {
 }
 .container {
     flex-grow: 1;
-    margin-left: 60px;
-    margin-right: 20px;
     padding: 20px;
     max-width: 1200px;
+    margin: 0 auto;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -57,14 +55,25 @@ h1 {
     text-align: center;
     color: #333;
 }
-.products, .add-product {
-    margin-top: 10px;
-    width: 100%;
+.products, .cart {
+    margin-top: 20px;
 }
-#add-product-form{
-    width: 50%;
-    margin-left:auto;
-    margin-right:auto;
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+.product {
+    background-color: #f9a825;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.product:hover {
+    background-color: #f57f17;
 }
 table {
     width: 100%;
@@ -78,8 +87,8 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
-.edit, .delete {
-    background-color: #f9a825;
+.remove{
+    background-color: red;
     color: white;
     padding: 8px;
     border: none;
@@ -87,18 +96,17 @@ th {
     text-align: center;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-right: 5px;
 }
-.edit:hover {
-    background-color: #f57f17;
-}
-.delete {
-    background-color: red;
-}
-.delete:hover {
+.remove:hover {
     background-color: #d32f2f;
 }
-#add-product {
+.total {
+    font-weight: bold;
+    text-align: right;
+    margin-top: 20px;
+    font-size:25px;
+}
+#complete-sale {
     display: block;
     width: 100%;
     padding: 10px;
@@ -110,29 +118,13 @@ th {
     font-size: 16px;
     margin-top: 20px;
 }
-#add-product:hover {
+#complete-sale:hover {
     background-color: #45a049;
 }
-input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-.form-group {
-    margin-bottom: 15px;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-@media (min-width: 1440px) {
-    .container{
-        margin: 0 0 0 250px;
-    }
+input[type="number"] {
+    width: 50px;
+    padding: 5px;
+    font-size: 14px;
 }
 
 /* Responsive styles */
@@ -140,13 +132,9 @@ label {
     body {
         flex-direction: column;
     }
-    .container {
-        margin: 150px 0 0 0;
-    }
     .sidebar {
         width: 100%;
         height: auto;
-        z-index: 1;
     }
     .sidebar ul {
         display: flex;
@@ -163,6 +151,9 @@ label {
         position: absolute;
         top: 15px;
         left: 20px;
+    }
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     table, thead, tbody, th, td, tr {
         display: block;
@@ -191,7 +182,12 @@ label {
         text-align: left;
         font-weight: bold;
     }
-    #add-product-form{
-        width: 100%;
+    .total {
+        text-align: center;
+    }
+    input[type="number"] {
+        width: 40px;
+        padding: 2px;
+        font-size: 12px;
     }
 }

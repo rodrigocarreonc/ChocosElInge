@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['access_token'])) {
+    header('Location: login.php');
+    exit();
+}
+
+include('http/finance_request.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,32 +25,33 @@
             <li><a href="index.php">Inicio</a></li>
             <li><a href="admin.php">Administrar</a></li>
             <li><a href="">Finanzas</a></li>
+            <li><a href="sales.php">Historial de Ventas</a></li>
         </ul>
     </div>
     <div class="container">
         <h1>Gestión Financiera</h1>
         <div class="outflow-form">
             <h2>Registrar Nuevo Gasto</h2>
-            <form id="outflow-form">
-                <label for="description">Descripción:</label>
-                <textarea id="description" required></textarea>
-                <label for="amount">Monto:</label>
-                <input type="number" id="amount" step="0.01" required>
+            <form id="outflow-form" method="POST">
+                <label for="concepto">Concepto:</label>
+                <textarea id="concepto" name="concepto" required></textarea>
+                <label for="monto">Monto:</label>
+                <input type="number" id="monto" name="monto" step="0.01" required>
                 <button type="submit">Registrar Gasto</button>
             </form>
         </div>
         <div class="financial-summary">
             <div class="summary-item">
                 <h3>Ingresos</h3>
-                <p class="income" id="total-income">$0.00</p>
+                <p class="income">$<?php echo $balance['total_ventas']; ?></p>
             </div>
             <div class="summary-item">
                 <h3>Gastos</h3>
-                <p class="outflow" id="total-outflow">$0.00</p>
+                <p class="outflow">$<?php echo $balance['total_egresos'] ?></p>
             </div>
             <div class="summary-item">
                 <h3>Ganancias</h3>
-                <p class="gain" id="total-gain">$0.00</p>
+                <p class="gain">$<?php echo $balance['total'] ?></p>
             </div>
         </div>
         <div class="outflow-list">
@@ -50,56 +61,20 @@
                     <tr>
                         <th>Descripción</th>
                         <th>Monto</th>
+                        <th>Fecha</th>
                     </tr>
                 </thead>
-                <tbody id="outflow-list"></tbody>
+                <tbody>
+                    <?php foreach ($outflows as $outflow): ?>
+                        <tr>
+                            <td><?php echo $outflow['concepto']; ?></td>
+                            <td>$<?php echo number_format($outflow['monto'], 2); ?></td>
+                            <td><?php echo $outflow['fecha']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
             </table>
         </div>
     </div>
-
-    <script>
-        let income = 1000; // Example initial income
-        let outflows = [];
-
-        function updateFinancialSummary() {
-            const totalOutflow = outflows.reduce((sum, outflow) => sum + outflow.amount, 0);
-            const gain = income - totalOutflow;
-
-            document.getElementById('total-income').textContent = `$${income.toFixed(2)}`;
-            document.getElementById('total-outflow').textContent = `$${totalOutflow.toFixed(2)}`;
-            document.getElementById('total-gain').textContent = `$${gain.toFixed(2)}`;
-        }
-
-        function renderOutflows() {
-            const outflowList = document.getElementById('outflow-list');
-            outflowList.innerHTML = '';
-            outflows.forEach(outflow => {
-                const row = `
-                    <tr>
-                        <td>${outflow.description}</td>
-                        <td>$${outflow.amount.toFixed(2)}</td>
-                    </tr>
-                `;
-                outflowList.innerHTML += row;
-            });
-        }
-
-        document.getElementById('outflow-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const description = document.getElementById('description').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-
-            if (description && !isNaN(amount)) {
-                outflows.push({ description, amount });
-                updateFinancialSummary();
-                renderOutflows();
-                this.reset();
-            }
-        });
-
-        // Initial render
-        updateFinancialSummary();
-        renderOutflows();
-    </script>
 </body>
 </html>

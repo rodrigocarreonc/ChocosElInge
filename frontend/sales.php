@@ -1,182 +1,91 @@
-<?php
-session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$products = [
-    ['id' => 1, 'name' => 'Chocos', 'price' => 10],
-    ['id' => 2, 'name' => 'Galletas', 'price' => 15],
-    ['id' => 3, 'name' => 'Chamucos', 'price' => 12],
-    ['id' => 4, 'name' => 'Duros Preparados', 'price' => 20],
-];
-
-$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_to_cart'])) {
-        $product_id = $_POST['product_id'];
-        if (isset($cart[$product_id])) {
-            $cart[$product_id]['quantity']++;
-        } else {
-            $product = array_filter($products, function($p) use ($product_id) {
-                return $p['id'] == $product_id;
-            });
-            $product = reset($product);
-            $cart[$product_id] = [
-                'name' => $product['name'],
-                'price' => $product['price'],
-                'quantity' => 1
-            ];
-        }
-    } elseif (isset($_POST['remove_from_cart'])) {
-        $product_id = $_POST['product_id'];
-        unset($cart[$product_id]);
-    } elseif (isset($_POST['update_quantity'])) {
-        $product_id = $_POST['product_id'];
-        $quantity = intval($_POST['quantity']);
-        if ($quantity > 0) {
-            $cart[$product_id]['quantity'] = $quantity;
-        } else {
-            unset($cart[$product_id]);
-        }
-    } elseif (isset($_POST['complete_sale'])) {
-        // Here you would typically process the sale, save to database, etc.
-        $cart = []; // Clear the cart after completing the sale
-    }
-    
-    $_SESSION['cart'] = $cart;
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-
-$total = array_reduce($cart, function($sum, $item) {
-    return $sum + ($item['price'] * $item['quantity']);
-}, 0);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chocos "El Inge" - Sales</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #1f2937;
-        }
-        .container {
-            display: flex;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .products, .cart {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            flex: 1;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-        }
-        .product-button {
-            background-color: #f59e0b;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .product-button:hover {
-            background-color: #d97706;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        .cart-total {
-            font-weight: bold;
-            text-align: right;
-            margin-top: 20px;
-        }
-        .complete-sale {
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .complete-sale:hover {
-            background-color: #059669;
-        }
-    </style>
+    <title>Chocos "El Inge" - Historial de Ventas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style/sale.css">
 </head>
 <body>
-    <h1>Chocos "El Inge" - Sales</h1>
-    <div class="container">
-        <div class="products">
-            <h2>Products</h2>
-            <div class="product-grid">
-                <?php foreach ($products as $product): ?>
-                    <form method="post">
-                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                        <button type="submit" name="add_to_cart" class="product-button">
-                            <?php echo $product['name']; ?><br>
-                            $<?php echo number_format($product['price'], 2); ?>
-                        </button>
-                    </form>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        <div class="cart">
-            <h2>Current Sale</h2>
-            <?php foreach ($cart as $product_id => $item): ?>
-                <div class="cart-item">
-                    <span><?php echo $item['name']; ?> - $<?php echo number_format($item['price'], 2); ?></span>
-                    <div>
-                        <form method="post" style="display: inline;">
-                            <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
-                            <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" min="1" style="width: 40px;">
-                            <button type="submit" name="update_quantity">Update</button>
-                        </form>
-                        <form method="post" style="display: inline;">
-                            <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
-                            <button type="submit" name="remove_from_cart">Remove</button>
-                        </form>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            <div class="cart-total">
-                Total: $<?php echo number_format($total, 2); ?>
-            </div>
-            <form method="post">
-                <button type="submit" name="complete_sale" class="complete-sale">Complete Sale</button>
-            </form>
-        </div>
+    <div class="sidebar">
+        <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+        <h2>Chocos "El Inge"</h2>
+        <ul>
+            <li><a href="index.php">Inicio</a></li>
+            <li><a href="admin.php">Administrar</a></li>
+            <li><a href="finance.php">Finanzas</a></li>
+            <li><a href="">Historial de Ventas</a></li>
+        </ul>
     </div>
+    <div class="container">
+        <h1>Historial de Ventas</h1>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Buscar por fecha (YYYY-MM-DD)">
+            <button id="search-button">Buscar</button>
+        </div>
+        <table id="sales-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="sales-list"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3">Total de Ventas</td>
+                    <td id="total-sales"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        // Sample sales data (in a real application, this would come from a server)
+        const salesData = [
+            { date: '2023-06-01', time: '10:30', products: 'Chocos (2), Galletas (1)', total: 35.00 },
+            { date: '2023-06-01', time: '14:15', products: 'Chamucos (3), Duros Preparados (2)', total: 55.00 },
+            { date: '2023-06-02', time: '11:45', products: 'Chocos (1), Galletas (3), Duros Preparados (1)', total: 40.00 },
+            { date: '2023-06-02', time: '16:20', products: 'Chamucos (2), Chocos (2)', total: 50.00 },
+            { date: '2023-06-03', time: '09:00', products: 'Galletas (5)', total: 25.00 },
+        ];
+
+        function renderSales(sales) {
+            const salesList = document.getElementById('sales-list');
+            salesList.innerHTML = '';
+            let totalSales = 0;
+
+            sales.forEach(sale => {
+                const row = `
+                    <tr>
+                        <td>${sale.date}</td>
+                        <td>${sale.time}</td>
+                        <td>${sale.products}</td>
+                        <td>$${sale.total.toFixed(2)}</td>
+                    </tr>
+                `;
+                salesList.innerHTML += row;
+                totalSales += sale.total;
+            });
+
+            document.getElementById('total-sales').textContent = `$${totalSales.toFixed(2)}`;
+        }
+
+        function searchSales() {
+            const searchDate = document.getElementById('search-input').value;
+            const filteredSales = searchDate
+                ? salesData.filter(sale => sale.date === searchDate)
+                : salesData;
+            renderSales(filteredSales);
+        }
+
+        document.getElementById('search-button').addEventListener('click', searchSales);
+
+        // Initial render
+        renderSales(salesData);
+    </script>
 </body>
 </html>

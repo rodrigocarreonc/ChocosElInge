@@ -5,7 +5,7 @@ if (!isset($_SESSION['access_token'])) {
     header('Location: login.php');
     exit();
 }
-include ('http.php');
+include ('http/products_request.php');
 $token = $_SESSION['access_token'];
 ?>
 <!DOCTYPE html>
@@ -14,7 +14,7 @@ $token = $_SESSION['access_token'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chocos "El Inge"</title>
-    <link rel="stylesheet" href="style/sale.css">
+    <link rel="stylesheet" href="style/index.css">
 </head>
 <body>
     <div class="sidebar">
@@ -24,6 +24,7 @@ $token = $_SESSION['access_token'];
             <li><a href="">Inicio</a></li>
             <li><a href="admin.php">Administrar</a></li>
             <li><a href="finance.php">Finanzas</a></li>
+            <li><a href="sales.php">Historial de Ventas</a></li>
         </ul>
     </div>
     <div class="container">
