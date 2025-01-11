@@ -134,4 +134,39 @@ tr:hover {
     #search-button {
         width: 100%;
     }
+    
+    /* Responsive table styles */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+    }
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+    }
+    td:before {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        content: attr(data-label);
+        font-weight: bold;
+    }
+    .total-row td {
+        padding-left: 12px;
+    }
+    .total-row td:before {
+        content: none;
+    }
 }

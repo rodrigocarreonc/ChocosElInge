@@ -61,10 +61,10 @@
             sales.forEach(sale => {
                 const row = `
                     <tr>
-                        <td>${sale.date}</td>
-                        <td>${sale.time}</td>
-                        <td>${sale.products}</td>
-                        <td>$${sale.total.toFixed(2)}</td>
+                        <td data-label="Fecha">${sale.date}</td>
+                        <td data-label="Hora">${sale.time}</td>
+                        <td data-label="Productos">${sale.products}</td>
+                        <td data-label="Total">$${sale.total.toFixed(2)}</td>
                     </tr>
                 `;
                 salesList.innerHTML += row;
