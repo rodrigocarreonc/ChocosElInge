@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['access_token'])) {
+    header('Location: login.php');
+    exit();
+}
+include ('http/sales_request.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +42,26 @@
                     <th>Total</th>
                 </tr>
             </thead>
-            <tbody id="sales-list"></tbody>
+            <tbody>
+                <?php if(isset($sales)): ?>
+                    <?php foreach($sales as $sale): 
+                        list($fecha, $hora) = explode(' ', $sale['fecha']);?>
+                        <tr>
+                            <td data-label="Fecha"><?php echo $fecha?></td>
+                            <td data-label="Hora"><?php echo $hora?></td>
+                            <td data-label="Productos">
+                                <?php
+                                $productos = []; 
+                                foreach($sale['detalles'] as $detalle){
+                                    $productos[] = $detalle['producto']['nombre'] . ' (' . $detalle['cantidad'] . ')';
+                                }
+                                echo implode(', ', $productos);?>
+                            </td>
+                            <td data-label="Total" id="sale-total">$<?php echo number_format($sale['total'], 2); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
             <tfoot>
                 <tr class="total-row">
                     <td colspan="3">Total de Ventas</td>
@@ -42,50 +70,21 @@
             </tfoot>
         </table>
     </div>
-
     <script>
-        // Sample sales data (in a real application, this would come from a server)
-        const salesData = [
-            { date: '2023-06-01', time: '10:30', products: 'Chocos (2), Galletas (1)', total: 35.00 },
-            { date: '2023-06-01', time: '14:15', products: 'Chamucos (3), Duros Preparados (2)', total: 55.00 },
-            { date: '2023-06-02', time: '11:45', products: 'Chocos (1), Galletas (3), Duros Preparados (1)', total: 40.00 },
-            { date: '2023-06-02', time: '16:20', products: 'Chamucos (2), Chocos (2)', total: 50.00 },
-            { date: '2023-06-03', time: '09:00', products: 'Galletas (5)', total: 25.00 },
-        ];
-
-        function renderSales(sales) {
-            const salesList = document.getElementById('sales-list');
-            salesList.innerHTML = '';
+        function calculateTotalSales() {
+            const saleTotals = document.querySelectorAll('#sale-total');
             let totalSales = 0;
 
-            sales.forEach(sale => {
-                const row = `
-                    <tr>
-                        <td data-label="Fecha">${sale.date}</td>
-                        <td data-label="Hora">${sale.time}</td>
-                        <td data-label="Productos">${sale.products}</td>
-                        <td data-label="Total">$${sale.total.toFixed(2)}</td>
-                    </tr>
-                `;
-                salesList.innerHTML += row;
-                totalSales += sale.total;
+            saleTotals.forEach(total => {
+                const amount = parseFloat(total.textContent.replace('$', '').replace(',', ''));
+                totalSales += amount;
             });
 
-            document.getElementById('total-sales').textContent = `$${totalSales.toFixed(2)}`;
+            document.getElementById('total-sales').textContent = '$' + totalSales.toFixed(2);
         }
 
-        function searchSales() {
-            const searchDate = document.getElementById('search-input').value;
-            const filteredSales = searchDate
-                ? salesData.filter(sale => sale.date === searchDate)
-                : salesData;
-            renderSales(filteredSales);
-        }
-
-        document.getElementById('search-button').addEventListener('click', searchSales);
-
-        // Initial render
-        renderSales(salesData);
+        // Call the function to calculate total sales
+        calculateTotalSales();
     </script>
 </body>
 </html>
