@@ -1,13 +1,10 @@
 <?php
 session_start();
+$token = $_SESSION['access_token'];
 
-if (!isset($_SESSION['access_token'])) {
-    header('Location: login.php');
-    exit();
-}
+include ('http/auth_token.php');
 include ('http/products_request.php');
 include ('http/flavors_request.php');
-$token = $_SESSION['access_token'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
