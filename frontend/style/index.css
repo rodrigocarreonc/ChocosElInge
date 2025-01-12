@@ -5,33 +5,6 @@ body {
     background-color: #f0f0f0;
     display: flex;
 }
-.sidebar {
-    width: 240px;
-    background-color: #333;
-    color: white;
-    height: 97.18vh;
-    padding-top: 20px;
-}
-.sidebar h2 {
-    text-align: center;
-    padding: 15px 0px 0px 0px;
-    margin-bottom: 5px;
-}
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-.sidebar li {
-    padding: 10px 20px;
-}
-.sidebar li a {
-    color: white;
-    text-decoration: none;
-    display: block;
-}
-.sidebar li:hover {
-    background-color: #555;
-}
 .fa-solid {
     font-size: 20px;
     cursor: pointer;
@@ -126,22 +99,10 @@ input[type="number"] {
     padding: 5px;
     font-size: 14px;
 }
-
 /* Responsive styles */
 @media (max-width: 768px) {
     body {
         flex-direction: column;
-    }
-    .sidebar {
-        width: 100%;
-        height: auto;
-    }
-    .sidebar ul {
-        display: flex;
-        justify-content: space-around;
-    }
-    .sidebar li {
-        padding: 10px;
     }
     .fa-solid {
         font-size: 20px;

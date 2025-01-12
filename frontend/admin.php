@@ -15,6 +15,7 @@ include('http/products_request.php');
     <title>Chocos "El Inge" - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style/admin.css">
+    <link rel="stylesheet" href="style/sidebar.css">
 </head>
 <body>
     <div class="sidebar">

@@ -6,6 +6,7 @@ if (!isset($_SESSION['access_token'])) {
     exit();
 }
 include ('http/products_request.php');
+include ('http/flavors_request.php');
 $token = $_SESSION['access_token'];
 ?>
 <!DOCTYPE html>
@@ -15,6 +16,8 @@ $token = $_SESSION['access_token'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chocos "El Inge"</title>
     <link rel="stylesheet" href="style/index.css">
+    <link rel="stylesheet" href="style/sidebar.css">
+    <link rel="stylesheet" href="style/modal.css">
 </head>
 <body>
     <div class="sidebar">
@@ -34,9 +37,15 @@ $token = $_SESSION['access_token'];
             <div class="product-grid">
                 <?php if (isset($products)): ?>
                     <?php foreach ($products as $product): ?>
-                        <div class="product" onclick="addToCart('<?php echo $product['id']; ?>', '<?php echo $product['nombre']; ?>', <?php echo $product['precio']; ?>)">
-                            <?php echo $product['nombre']; ?><br>$<?php echo $product['precio']; ?>
-                        </div>
+                        <?php if ($product['nombre'] === 'Choco'): ?>
+                            <div class="product" onclick="showFlavorModal('<?php echo $product['id']; ?>', '<?php echo $product['nombre']; ?>', <?php echo $product['precio']; ?>)">
+                                <?php echo $product['nombre']; ?><br>$<?php echo $product['precio']; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="product" onclick="addToCart('<?php echo $product['id']; ?>', '<?php echo $product['nombre']; ?>', <?php echo $product['precio']; ?>)">
+                                <?php echo $product['nombre']; ?><br>$<?php echo $product['precio']; ?>
+                            </div>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p><?php echo $error_message; ?></p>
@@ -61,16 +70,38 @@ $token = $_SESSION['access_token'];
             <button id="complete-sale" onclick="completeSale()">Complete Sale</button>
         </div>
     </div>
+    <div id="flavorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Selecciona el sabor de Choco</h2>
+            <?php if(isset($flavors)): ?>
+                <?php foreach ($flavors as $flavor): ?>
+                    <button class="flavor-button" onclick="addToCart('1', 'Choco', 15, '<?php echo $flavor['id']; ?>', '<?php echo $flavor['sabor']; ?>')"><?php echo $flavor['sabor']; ?></button>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p><?php echo $error_message; ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <script>
         let cart = [];
+        function showFlavorModal(productId, productName, productPrice) {
+            document.getElementById('flavorModal').style.display = 'block';
+            document.getElementById('flavorModal').setAttribute('data-product-id', productId);
+            document.getElementById('flavorModal').setAttribute('data-product-name', productName);
+            document.getElementById('flavorModal').setAttribute('data-product-price', productPrice);
+        }
 
-        function addToCart(id, name, price) {
-            const existingItem = cart.find(item => item.id === id);
+        function addToCart(id, name, price, flavorId = null, flavorName = null) {
+            document.getElementById('flavorModal').style.display = 'none';
+            const productId = flavorId ? `${id}-${flavorId}` : id;
+            const productName = flavorName ? `${name} de ${flavorName}` : name;
+            const existingItem = cart.find(item => item.id === productId);
             if (existingItem) {
                 existingItem.quantity++;
             } else {
-                cart.push({ id, name, price, quantity: 1 });
+                cart.push({ id: productId, name: productName, price, quantity: 1, flavorId, flavorName });
             }
             updateCart();
         }
@@ -122,8 +153,9 @@ $token = $_SESSION['access_token'];
             const token = '<?php echo $token; ?>';
             const saleData = {
                 productos: cart.map(item => ({
-                    producto_id: item.id,
-                    cantidad: item.quantity
+                    producto_id: item.id.split('-')[0], // Extract the original product ID
+                    cantidad: item.quantity,
+                    sabor_id: item.flavorId || null
                 }))
             };
 
@@ -152,6 +184,18 @@ $token = $_SESSION['access_token'];
                 console.error('Error:', error);
                 alert('Error al registrar la venta');
             });
+        }
+
+        // Close the modal when clicking on <span> (x)
+        document.getElementsByClassName("close")[0].onclick = function() {
+            document.getElementById('flavorModal').style.display = "none";
+        }
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('flavorModal')) {
+                document.getElementById('flavorModal').style.display = "none";
+            }
         }
     </script>
     <script src="https://kit.fontawesome.com/eab4daf295.js" crossorigin="anonymous"></script>

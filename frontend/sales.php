@@ -15,6 +15,7 @@ include ('http/sales_request.php');
     <title>Chocos "El Inge" - Historial de Ventas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style/sale.css">
+    <link rel="stylesheet" href="style/sidebar.css">
 </head>
 <body>
     <div class="sidebar">
@@ -53,7 +54,7 @@ include ('http/sales_request.php');
                                 <?php
                                 $productos = []; 
                                 foreach($sale['detalles'] as $detalle){
-                                    $productos[] = $detalle['producto']['nombre'] . ' (' . $detalle['cantidad'] . ')';
+                                    $productos[] =  $detalle['producto']['nombre'] == "Choco" ? $detalle['producto']['nombre'] . ' de ' . $detalle['sabor']['sabor'] . ' (' . $detalle['cantidad'] . ')' : $detalle['producto']['nombre'] . ' (' . $detalle['cantidad'] . ')';
                                 }
                                 echo implode(', ', $productos);?>
                             </td>

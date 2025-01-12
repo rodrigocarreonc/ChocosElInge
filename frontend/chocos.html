@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chocos "El Inge" - Punto de Venta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #333;
+            color: white;
+            height: 97.18vh;
+            padding-top: 20px;
+        }
+        .sidebar h2 {
+            text-align: center;
+            padding: 15px 0px 0px 0px;
+            margin-bottom: 5px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            padding: 10px 20px;
+        }
+        .sidebar li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar li:hover {
+            background-color: #555;
+        }
+        .fa-solid {
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            padding-bottom: 10px;
+        }
+        .container {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .product-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .product-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f9a825;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .product-button:hover {
+            background-color: #f57f17;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .quantity-input {
+            width: 50px;
+        }
+        #total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .flavor-button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .flavor-button:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            .sidebar ul {
+                display: flex;
+                justify-content: space-around;
+            }
+            .sidebar li {
+                padding: 10px;
+            }
+            .product-buttons {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+        <h2>Chocos "El Inge"</h2>
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="admin.html">Administrar</a></li>
+            <li><a href="finance.html">Finanzas</a></li>
+            <li><a href="sales-history.html">Historial de Ventas</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="product-buttons">
+            <button class="product-button" onclick="showFlavorModal('Choco')">Choco</button>
+            <button class="product-button" onclick="addToCart('Galletas', 10)">Galletas</button>
+            <button class="product-button" onclick="addToCart('Chamucos', 15)">Chamucos</button>
+            <button class="product-button" onclick="addToCart('Duros Preparados', 20)">Duros Preparados</button>
+        </div>
+        <table id="cart">
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+        </table>
+        <div id="total">Total: $0</div>
+    </div>
+
+    <div id="flavorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Selecciona el sabor de Choco</h2>
+            <button class="flavor-button" onclick="addToCart('Choco - Chocolate', 15)">Chocolate</button>
+            <button class="flavor-button" onclick="addToCart('Choco - Fresa', 15)">Fresa</button>
+            <button class="flavor-button" onclick="addToCart('Choco - Vainilla', 15)">Vainilla</button>
+            <button class="flavor-button" onclick="addToCart('Choco - Menta', 15)">Menta</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = {};
+        let total = 0;
+
+        function showFlavorModal(product) {
+            document.getElementById('flavorModal').style.display = 'block';
+        }
+
+        function addToCart(product, price) {
+            if (product.startsWith('Choco')) {
+                document.getElementById('flavorModal').style.display = 'none';
+            }
+            if (cart[product]) {
+                cart[product].quantity++;
+                cart[product].total = cart[product].quantity * price;
+            } else {
+                cart[product] = {
+                    price: price,
+                    quantity: 1,
+                    total: price
+                };
+            }
+            updateCart();
+        }
+
+        function removeFromCart(product) {
+            delete cart[product];
+            updateCart();
+        }
+
+        function updateQuantity(product, quantity) {
+            cart[product].quantity = parseInt(quantity);
+            cart[product].total = cart[product].quantity * cart[product].price;
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartTable = document.getElementById('cart');
+            let cartHTML = `
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            `;
+            total = 0;
+            for (let product in cart) {
+                cartHTML += `
+                    <tr>
+                        <td>${product}</td>
+                        <td>$${cart[product].price}</td>
+                        <td><input type="number" class="quantity-input" value="${cart[product].quantity}" min="1" onchange="updateQuantity('${product}', this.value)"></td>
+                        <td>$${cart[product].total}</td>
+                        <td><button onclick="removeFromCart('${product}')">Eliminar</button></td>
+                    </tr>
+                `;
+                total += cart[product].total;
+            }
+            cartTable.innerHTML = cartHTML;
+            document.getElementById('total').innerText = `Total: $${total}`;
+        }
+
+        // Close the modal when clicking on <span> (x)
+        document.getElementsByClassName("close")[0].onclick = function() {
+            document.getElementById('flavorModal').style.display = "none";
+        }
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('flavorModal')) {
+                document.getElementById('flavorModal').style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
